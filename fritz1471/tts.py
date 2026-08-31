@@ -33,8 +33,8 @@ from typing import Tuple
 
 # 3rd party
 from domdf_python_tools.paths import TemporaryPathPlus
-from gtts import gTTS
-from pydub.audio_segment import AudioSegment
+from gtts import gTTS  # type: ignore[import-untyped]
+from pydub.audio_segment import AudioSegment  # type: ignore[import-untyped]
 
 __all__ = ["tts"]
 

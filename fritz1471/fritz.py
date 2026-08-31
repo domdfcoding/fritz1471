@@ -31,7 +31,7 @@ import datetime
 
 # 3rd party
 import inflect
-from fritzconnection.lib.fritzcall import FritzCall
+from fritzconnection.lib.fritzcall import FritzCall  # type: ignore[import-untyped]
 
 __all__ = ["get_last_call"]
 
@@ -39,6 +39,11 @@ ordinal = inflect.engine().ordinal
 
 
 def get_last_call(fc: FritzCall) -> str:
+	"""
+	Returns the caller and date and time of the last received call.
+
+	:param fc:
+	"""
 
 	today = datetime.date.today()
 	yesterday = today - datetime.timedelta(days=1)
@@ -49,18 +54,23 @@ def get_last_call(fc: FritzCall) -> str:
 		# print(call.__dict__)
 		if call.type == 3:
 			continue
-		# call_dt = datetime.datetime.strptime("%d.%m.%y")
+
 		call_dt: datetime.datetime = call.date
 		call_date = call_dt.date()
 		call_time = call_dt.time()
+
 		if call_date == today:
 			date_str = "today"
 		elif call_date == yesterday:
 			date_str = "yesterday"
 		else:
-			date_str = f"{call_date.strftime('%A')}, {ordinal(call_date.day)} {call_date.strftime('%B')}"
-			# TODO: year if not current year
-		time_str = call_time.strftime("%-I %M %p")
+			weekday = call_date.strftime("%A")
+			mday = ordinal(call_date.day)  # type: ignore[arg-type]  # TODO: issue with inflect's type hints
+			month = call_date.strftime("%B")
+			year = str(call_date.year) if call_date.year != today.year else ''
+			date_str = f"{weekday}, {mday} {month} {year}"
+
+		time_str = call_time.strftime("%-I %M %p")  # noqa: STRFTIME001
 		caller: str = call.Caller
 		assert caller.isnumeric()
 		phone_number = ' '.join(caller)

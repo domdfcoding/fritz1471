@@ -32,13 +32,21 @@ import warnings
 
 # 3rd party
 import pyVoIP.RTP
-from pyVoIP.VoIP.VoIP import CallState, VoIPCall
+from pyVoIP.VoIP.VoIP import CallState, VoIPCall  # type: ignore[import-not-found]
 
-__all__ = ["RTPClient", "play_wav"]
+__all__ = ["play_wav"]
 
 
-def play_wav(call: VoIPCall, data: bytes, duration: float):
-	call.write_audio(data)  # This writes the audio data to the transmit buffer, this must be bytes.
+def play_wav(call: VoIPCall, data: bytes, duration: float) -> None:
+	"""
+	Play a WAV file to the VoIP call.
+
+	:param call:
+	:param data:
+	:param duration:
+	"""
+
+	call.write_audio(data)
 	stop = time.time() + duration
 
 	while time.time() <= stop and call.state == CallState.ANSWERED:
@@ -78,8 +86,6 @@ class RTPClient(pyVoIP.RTP.RTPClient):
 			packet += self.outSSRC.to_bytes(4, byteorder="big")
 			packet += payload
 
-			# debug(payload)
-
 			while True:  # firstly wait non-CPU-intensive, but with time-sleep inaccuracy
 				# (depending on OS, see https://stackoverflow.com/questions/1133857/how-accurate-is-pythons-time-sleep)
 				to_wait = send_time - time.perf_counter()
@@ -95,11 +101,12 @@ class RTPClient(pyVoIP.RTP.RTPClient):
 				if delta >= 0:
 					break
 
-			send_time = time.perf_counter(
-			) + cycle - delta  # delta means to keep the 20 ms cycle: "send the next package earlier if his one was too late"
+			# delta means to keep the 20 ms cycle: "send the next package earlier if his one was too late"
+			send_time = time.perf_counter() + cycle - delta
+
 			if self.NSD:
 				try:
-					self.sout.sendto(packet, (self.outIP, self.outPort))
+					self.sout.sendto(packet, (self.outIP, self.outPort))  # type: ignore[attr-defined]
 				except OSError:
 					warnings.warn(
 							"RTP Packet failed to send!",
@@ -111,4 +118,4 @@ class RTPClient(pyVoIP.RTP.RTPClient):
 			self.outTimestamp += len(payload)
 
 
-pyVoIP.RTP.RTPClient = RTPClient
+pyVoIP.RTP.RTPClient = RTPClient  # type: ignore[misc]
