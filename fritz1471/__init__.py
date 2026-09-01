@@ -33,7 +33,7 @@ from typing import Optional
 
 # 3rd party
 import local_ip_address
-from fritzconnection.lib.fritzcall import FritzCall
+from fritzconnection.lib.fritzcall import FritzCall  # type: ignore[import-untyped]
 from pyVoIP.VoIP.VoIP import InvalidStateError, VoIPCall, VoIPPhone
 
 # this package
@@ -120,6 +120,10 @@ class Fritz1471:
 			call.hangup()
 
 	def run(self) -> None:
+		"""
+		Start the call history server.
+		"""
+
 		print(f"SIP client listening on {self._phone.sip.myIP}:{self._phone.sip.myPort}")
 
 		try:

@@ -32,7 +32,7 @@ import warnings
 
 # 3rd party
 import pyVoIP.RTP
-from pyVoIP.VoIP.VoIP import CallState, VoIPCall  # type: ignore[import-not-found]
+from pyVoIP.VoIP.VoIP import CallState, VoIPCall
 
 __all__ = ["play_wav"]
 
@@ -106,7 +106,7 @@ class RTPClient(pyVoIP.RTP.RTPClient):
 
 			if self.NSD:
 				try:
-					self.sout.sendto(packet, (self.outIP, self.outPort))  # type: ignore[attr-defined]
+					self.sout.sendto(packet, (self.outIP, self.outPort))
 				except OSError:
 					warnings.warn(
 							"RTP Packet failed to send!",
