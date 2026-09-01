@@ -27,12 +27,11 @@ Text-to-speech generator.
 #
 
 # stdlib
-import os
 import wave
+from io import BytesIO
 from typing import Tuple
 
 # 3rd party
-from domdf_python_tools.paths import TemporaryPathPlus
 from gtts import gTTS  # type: ignore[import-untyped]
 from pydub.audio_segment import AudioSegment  # type: ignore[import-untyped]
 
@@ -50,19 +49,21 @@ def tts(msg: str) -> Tuple[bytes, float]:
 
 	sample_rate = 8000
 
-	with TemporaryPathPlus() as tmpdir:
+	mp3_fname = BytesIO()
+	wav_fname = BytesIO()
 
-		mp3_fname = tmpdir / "tts.mp3"
-		wav_fname = tmpdir / "tts.wav"
+	tts = gTTS(text=msg, lang="en", slow=True, lang_check=True)
+	tts.write_to_fp(mp3_fname)
+	mp3_fname.flush()
+	mp3_fname.seek(0)
 
-		tts = gTTS(text=msg, lang="en", slow=True, lang_check=True)
-		tts.save(mp3_fname)
+	sound = AudioSegment.from_mp3(mp3_fname).set_frame_rate(sample_rate).set_sample_width(1)
+	sound.export(wav_fname, format="wav")
 
-		sound = AudioSegment.from_mp3(mp3_fname).set_frame_rate(sample_rate).set_sample_width(1)
-		sound.export(wav_fname, format="wav")
+	wav_fname.seek(0)
 
-		with wave.open(os.fspath(wav_fname), "rb") as f:
-			frames = f.getnframes()
-			data = f.readframes(frames)
+	with wave.open(wav_fname, "rb") as f:
+		frames = f.getnframes()
+		data = f.readframes(frames)
 
 	return data, (frames / sample_rate)  # frames/sample_rate is the length of the audio in seconds
