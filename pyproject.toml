@@ -22,6 +22,9 @@ Homepage = "https://github.com/domdfcoding/fritz1471"
 "Issue Tracker" = "https://github.com/domdfcoding/fritz1471/issues"
 "Source Code" = "https://github.com/domdfcoding/fritz1471"
 
+[project.scripts]
+fritz1471 = "fritz1471.__main__:main"
+
 [tool.whey]
 base-classifiers = []
 python-versions = [ "3.8", "3.9", "3.10", "3.11", "3.12",]
@@ -57,3 +60,4 @@ reformat = true
 
 [tool.dep_checker.name_mapping]
 pyvoip = "pyVoIP"
+python_dotenv = "dotenv"

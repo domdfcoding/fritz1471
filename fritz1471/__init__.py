@@ -79,6 +79,7 @@ class Fritz1471:
 		self.fritzbox_password = fritzbox_password
 		self.fritzbox_ip = fritzbox_ip
 
+		print(f"Connecting to Fritz!Box at {fritzbox_ip}...")
 		self._fc = FritzCall(
 				address=fritzbox_ip,
 				user=fritzbox_username,
@@ -94,7 +95,7 @@ class Fritz1471:
 				sip_username,
 				sip_password,
 				callCallback=self.answer,
-				sipPort=local_sip_port,
+				sipPort=int(local_sip_port),
 				myIP=sip_listen_address,
 				)
 
@@ -128,7 +129,7 @@ class Fritz1471:
 
 		try:
 			self._phone.start()
-			input("Press enter to disable the phone")
+			input("Press enter to disable the phone\n")
 			self._phone.stop()
 		except KeyboardInterrupt:
 			self._phone.stop()
