@@ -1,0 +1,13 @@
+[Unit]
+Description=1471-esque implementation for Fritz!Boxes.
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Restart=always
+User=nas
+RestartSec=1
+ExecStart=/home/nas/fritz1471/run.sh
+
+[Install]
+WantedBy=multi-user.target
